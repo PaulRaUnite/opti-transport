@@ -3,9 +3,9 @@
 The package contains functions to solve [transportation
 problems](https://en.wikipedia.org/wiki/Transportation_theory_(mathematics)).
 It has minimal tax method to create starting
-solution and optimize function that finds cells by potential
-method and redistributes weights of transportation by
-cycle shift.
+solution and optimize function that finds negative
+cells by potential method and redistributes weights
+of transportation by cycle of the cell shift.
 
 ## Notes(or Problems)
 - the package doesn't provide concurrency. You CAN'T work
