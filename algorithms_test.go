@@ -35,7 +35,10 @@ func TestCondition_MinimalTaxesMethod(t *testing.T) {
 		},
 		0,
 	}
-	solution := cond.MinimalTaxesMethod()
+	solution, err := cond.MinimalTaxesMethod()
+	if err != nil {
+		t.Error(err)
+	}
 	should := Result{[][]number{
 		{newNum(10), newNum(0)},
 		{newNum(10), newNum(10)},
@@ -145,7 +148,10 @@ func TestComplitely(t *testing.T) {
 		},
 		0,
 	}
-	presolving1 := c1.MinimalTaxesMethod()
+	presolving1, err := c1.MinimalTaxesMethod()
+	if err != nil {
+		t.Error(err)
+	}
 	presolving1.Optimize()
 	if presolving1.CostFunc() != 18.0 {
 		t.Fail()
@@ -161,7 +167,10 @@ func TestComplitely(t *testing.T) {
 		},
 		0,
 	}
-	presolving2 := c2.MinimalTaxesMethod()
+	presolving2, err := c2.MinimalTaxesMethod()
+	if err != nil {
+		t.Error(err)
+	}
 	presolving2.Optimize()
 	if presolving2.CostFunc() != 1590 {
 		t.Fail()

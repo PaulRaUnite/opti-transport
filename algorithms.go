@@ -134,16 +134,19 @@ func (s Solving) cycleWithNegativePotentialSum() (cycle, error) {
 	return cycle{}, errNoNegativeCell
 }
 
+var errNoPlace = errors.New("can't find free cell")
+
 //minimumTaxCell returns indexes of the cell
-func (c Condition) minimumTaxCell(products, sales []number) (int, int) {
+func (c Condition) minimumTaxCell(products, sales []number) (int, int, error) {
 	//finding starting position
 	min_i := 0
 	min_j := 0
-	for i := 0; products[min_i].isNil() && i < len(products); i++ {
-		min_i++
+	for ; min_i < len(products) && products[min_i].isNil(); min_i++ {
 	}
-	for j := 0; sales[min_j].isNil() && j < len(sales); j++ {
-		min_j++
+	for ; min_j < len(sales) && sales[min_j].isNil(); min_j++ {
+	}
+	if min_j == len(sales) || min_i == len(products) {
+		return 0, 0, errNoPlace
 	}
 	//finding min from allowed cells
 	for i, subarray := range c.taxes {
@@ -154,17 +157,15 @@ func (c Condition) minimumTaxCell(products, sales []number) (int, int) {
 			}
 		}
 	}
-	return min_i, min_j
+	return min_i, min_j, nil
 }
 
 //MinimalTaxesMethod find starting solution
-func (c Condition) MinimalTaxesMethod() Solving {
+func (c Condition) MinimalTaxesMethod() (Solving, error) {
 	res := newResult(len(c.products), len(c.sales))
-	products := make([]number, len(c.products))
-	sales := make([]number, len(c.sales))
+	products := numSliceCopy(c.products)
+	sales := numSliceCopy(c.sales)
 
-	copy(products, c.products)
-	copy(sales, c.sales)
 	//closure(why? because I can)
 	salesAndProductsIsNil := func() bool {
 		for _, value := range products {
@@ -187,13 +188,16 @@ func (c Condition) MinimalTaxesMethod() Solving {
 	//  subtract from product and sale
 	//  do loop again.
 	for !salesAndProductsIsNil() {
-		i, j := c.minimumTaxCell(products, sales)
+		i, j, err := c.minimumTaxCell(products, sales)
+		if err != nil {
+			return Solving{}, err
+		}
 		minTax := min(products[i], sales[j])
 		res.weight[i][j] = minTax
 		products[i] = minus(products[i], minTax)
 		sales[j] = minus(sales[j], minTax)
 	}
-	return Solving{c, res}
+	return Solving{c, res}, nil
 }
 
 func (presolve *Solving) Optimize() error {

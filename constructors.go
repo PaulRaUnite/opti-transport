@@ -1,6 +1,8 @@
 package opti_transport
 
-import "errors"
+import (
+	"errors"
+)
 
 var (
 	errWrongProduct = errors.New("wrong quantity of product points")
@@ -34,18 +36,20 @@ func NewCondition(inputProducts, inputSales []float64, taxes [][]float64) (*Cond
 	for _, v := range inputSales {
 		sumSales += v
 	}
+	sumSales = round(sumSales, .5, Precision)
+	sumProduct = round(sumProduct, .5, Precision)
 	if sumSales > sumProduct {
 		var zeroedTaxes []float64
 		for i := 0; i < len(taxes[0]); i++ {
 			zeroedTaxes = append(zeroedTaxes, 0)
 		}
 		taxes = append(taxes, zeroedTaxes)
-		inputProducts = append(inputProducts, sumSales-sumProduct)
+		inputProducts = append(inputProducts, round(sumSales-sumProduct, .5, Precision))
 	} else if sumSales < sumProduct {
 		for i, v := range taxes {
 			taxes[i] = append(v, 0)
 		}
-		inputSales = append(inputSales, sumProduct-sumSales)
+		inputSales = append(inputSales, round(sumProduct-sumSales, .5, Precision))
 	}
 	var products = make([]number, len(inputProducts))
 	var sales = make([]number, len(inputSales))

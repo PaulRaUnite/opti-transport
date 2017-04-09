@@ -1,6 +1,9 @@
 package opti_transport
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 //float point number and map of `e`(`epsilon` - infinity small number)
 //ATTENTION: never use number{n, nil}, only newNum, because functions not check nil map
@@ -17,7 +20,19 @@ func newNum(n float64) number {
 func (n number) String() string {
 	return fmt.Sprintf("(%v, %v)", n.n, n.e)
 }
-
+func round(val float64, roundOn float64, places int) (newVal float64) {
+	var round float64
+	pow := math.Pow(10, float64(places))
+	digit := pow * val
+	_, div := math.Modf(digit)
+	if div >= roundOn {
+		round = math.Ceil(digit)
+	} else {
+		round = math.Floor(digit)
+	}
+	newVal = round / pow
+	return
+}
 func (n number) isNil() bool {
 	return len(n.e) == 0 && n.n == 0
 }
@@ -80,7 +95,7 @@ func plus(n1, n2 number) number {
 func minus(n1, n2 number) number {
 	var temp = newNum(0)
 	//add numbers
-	temp.n = n1.n - n2.n
+	temp.n = round(n1.n-n2.n, 0.5, Precision)
 
 	//merge sets
 	temp.e = n1.e
@@ -105,4 +120,15 @@ func min(n1, n2 number) number {
 		return n2
 	}
 	return n1
+}
+
+func numSliceCopy(in []number) []number {
+	out := make([]number, len(in))
+	for i, value := range in {
+		out[i] = newNum(value.n)
+		for k, v := range value.e {
+			out[i].e[k] = v
+		}
+	}
+	return out
 }
