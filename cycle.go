@@ -1,5 +1,6 @@
 package opti_transport
 
+
 type cell struct {
 	i, j int
 }
@@ -14,7 +15,7 @@ func (c cycle) minValue() number {
 	min := c.line[1]
 	for i := 3; i < len(c.line); i += 2 {
 		tempCell := c.line[i]
-		if bigger(c.base.weight[min.i][min.j], c.base.weight[tempCell.i][tempCell.j]) {
+		if bigger(c.base.weight[min.i][min.j], c.base.weight[tempCell.i][tempCell.j]) { //min > temp
 			min = tempCell
 		}
 	}

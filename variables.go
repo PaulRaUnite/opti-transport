@@ -1,5 +1,7 @@
 package opti_transport
 
 var (
-	Precision int = 10 //of floats
+	precision     int     = 4 //of floats
+	tensPrecision float64        = 1000 //4
+	roundOn       float64 = 0.5
 )

@@ -8,12 +8,12 @@ import (
 //float point number and map of `e`(`epsilon` - infinity small number)
 //ATTENTION: never use number{n, nil}, only newNum, because functions not check nil map
 type number struct {
-	n float64
+	n int64
 	e map[int]int8 //named `epsilon` map to sign(1, -1)
 }
 
 //newNum is constructor of number
-func newNum(n float64) number {
+func newNum(n int64) number {
 	return number{n, make(map[int]int8)}
 }
 
@@ -58,6 +58,8 @@ func bigger(n1, n2 number) bool {
 	diff := minus(n1, n2)
 	if diff.n > 0 {
 		return true
+	} else if diff.n < 0 {
+		return false
 	}
 	s := int8(0)
 	for _, value := range diff.e {
@@ -95,7 +97,7 @@ func plus(n1, n2 number) number {
 func minus(n1, n2 number) number {
 	var temp = newNum(0)
 	//add numbers
-	temp.n = round(n1.n-n2.n, 0.5, Precision)
+	temp.n = n1.n-n2.n
 
 	//merge sets
 	temp.e = n1.e

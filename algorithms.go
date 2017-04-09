@@ -48,7 +48,7 @@ func (s *Solving) addDisturbance() error {
 func (s Solving) coloumnProcessPotential(j, prev int, prodPotent, salePotent []number) {
 	for i := 0; i < len(s.Res.weight); i++ {
 		if i != prev && !s.Res.weight[i][j].isNil() && prodPotent[i].isNil() {
-			prodPotent[i] = minus(number{s.cond.taxes[i][j], nil}, salePotent[j])
+			prodPotent[i] = minus(newNum(s.cond.taxes[i][j]), salePotent[j])
 			s.rowProcessPotential(i, j, prodPotent, salePotent)
 		}
 	}
@@ -56,7 +56,7 @@ func (s Solving) coloumnProcessPotential(j, prev int, prodPotent, salePotent []n
 func (s Solving) rowProcessPotential(i, prev int, prodPotent, salePotent []number) {
 	for j, value := range s.Res.weight[i] {
 		if j != prev && !value.isNil() && salePotent[j].isNil() {
-			salePotent[j] = minus(number{s.cond.taxes[i][j], nil}, prodPotent[i])
+			salePotent[j] = minus(newNum(s.cond.taxes[i][j]), prodPotent[i])
 			s.coloumnProcessPotential(j, i, prodPotent, salePotent)
 		}
 	}
@@ -82,6 +82,7 @@ func (s Solving) coloumnProcessCycle(j, prev int, c cycle) (cycle, bool) {
 			if c, ok := s.rowProcessCycle(i, j, c); ok {
 				return c, true
 			}
+			c.line = c.line[:len(c.line)-1]
 		}
 	}
 	return cycle{}, false
@@ -120,18 +121,33 @@ func (s Solving) cycleWithNegativePotentialSum() (cycle, error) {
 	prodPotent, salePotent := s.potentials()
 	zero := newNum(0)
 	numValue := newNum(0)
+	find := false
+	max := cell{}
+	minDelta := newNum(0)
 	//calculate Delta value for every nil cell
 	for i, subarr := range s.cond.taxes {
 		for j, value := range subarr {
 			numValue.n = value
+			//Cij <= Ui + Vj
 			//Dij = Cij - Ui - Vj
 			delta := minus(minus(numValue, prodPotent[i]), salePotent[j])
 			if bigger(zero, delta) {
-				return s.createCycle(i, j)
+				if find {
+					if bigger(minDelta, delta) {
+						minDelta = delta
+					}
+				} else {
+					max = cell{i,j}
+					minDelta = delta
+					find = true
+				}
 			}
 		}
 	}
-	return cycle{}, errNoNegativeCell
+	if find == false {
+		return cycle{}, errNoNegativeCell
+	}
+	return s.createCycle(max.i, max.j)
 }
 
 var errNoPlace = errors.New("can't find free cell")
@@ -230,11 +246,11 @@ func (presolve *Solving) Optimize() error {
 
 //CostFunc returns sum of compositions of all pairs of weight and tax matrices
 func (s Solving) CostFunc() float64 {
-	sum := float64(0)
+	sum := int64(0)
 	for i, subarray := range s.Res.weight {
 		for j, value := range subarray {
 			sum += value.n * s.cond.taxes[i][j]
 		}
 	}
-	return sum
+	return float64(sum) / (tensPrecision*tensPrecision)
 }

@@ -8,7 +8,7 @@ import (
 type Condition struct {
 	products    []number
 	sales       []number
-	taxes       [][]float64
+	taxes       [][]int64
 	nextEpsilon int
 }
 
@@ -44,7 +44,7 @@ func (r Result) WellPrintedString() string {
 	for _, subarr := range r.weight {
 		out += line
 		for _, value := range subarr {
-			out += fmt.Sprintf("|%10.3f", value.n)
+			out += fmt.Sprintf("|%10.3d", value.n)
 		}
 		out += "|"
 		out += "\n"
@@ -66,17 +66,17 @@ func (s Solving) WellPrintedString() string {
 		line += "-"
 	}
 	line += "|"
-	out += line + "--products|\n"
+	out += line + "-products-|\n"
 	for i, subarr := range s.Res.weight {
 		for _, value := range subarr {
-			out += fmt.Sprintf("|%10.3f", value.n)
+			out += fmt.Sprintf("|%10.3f", float64(value.n)/tensPrecision)
 		}
-		out += fmt.Sprintf("|%10.3f", s.cond.products[i].n)
+		out += fmt.Sprintf("|%10.3f", float64(s.cond.products[i].n)/tensPrecision)
 		out += "|\n"
 		out += line + "----------|\n"
 	}
 	for _, value := range s.cond.sales {
-		out += fmt.Sprintf("|%10.3f", value.n)
+		out += fmt.Sprintf("|%10.3f", float64(value.n)/tensPrecision)
 	}
 	out += "|<- sales\n"
 	out += line + "\n"

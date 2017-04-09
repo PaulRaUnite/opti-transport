@@ -29,7 +29,7 @@ func TestCondition_MinimalTaxesMethod(t *testing.T) {
 	cond := Condition{
 		[]number{newNum(10), newNum(20)},
 		[]number{newNum(20), newNum(10)},
-		[][]float64{
+		[][]int64{
 			{1, 2},
 			{3, 4},
 		},
@@ -56,7 +56,7 @@ var s = Solving{
 	Condition{
 		[]number{newNum(30), newNum(40), newNum(20)},
 		[]number{newNum(20), newNum(30), newNum(30), newNum(10)},
-		[][]float64{
+		[][]int64{
 			{2, 3, 2, 4},
 			{3, 2, 5, 1},
 			{4, 3, 2, 6},
@@ -142,7 +142,7 @@ func TestComplitely(t *testing.T) {
 	c1 := Condition{
 		[]number{newNum(3), newNum(6)},
 		[]number{newNum(3), newNum(2), newNum(4)},
-		[][]float64{
+		[][]int64{
 			{4, 3, 3},
 			{1, 2, 2},
 		},
@@ -160,7 +160,7 @@ func TestComplitely(t *testing.T) {
 	c2 := Condition{
 		[]number{newNum(80), newNum(100), newNum(50)},
 		[]number{newNum(60), newNum(60), newNum(70), newNum(40)},
-		[][]float64{
+		[][]int64{
 			{8, 12, 15, 5},
 			{6, 7, 9, 12},
 			{12, 5, 11, 10},

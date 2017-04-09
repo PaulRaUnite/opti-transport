@@ -28,39 +28,48 @@ func NewCondition(inputProducts, inputSales []float64, taxes [][]float64) (*Cond
 			}
 		}
 	}
+	//copying
+	var products = make([]number, len(inputProducts))
+	var sales = make([]number, len(inputSales))
+	for i := range products {
+		products[i] = newNum(int64(round(inputProducts[i], roundOn, precision)*tensPrecision))
+	}
+	for i := range sales {
+		sales[i] = newNum(int64(round(inputSales[i], roundOn, precision)*tensPrecision))
+	}
 	//check closeness of system
-	var sumSales, sumProduct float64
-	for _, v := range inputProducts {
-		sumProduct += v
+	var sumSales, sumProduct int64
+	for _, v := range products {
+		sumProduct += v.n
 	}
-	for _, v := range inputSales {
-		sumSales += v
+	for _, v := range sales {
+		sumSales += v.n
 	}
-	sumSales = round(sumSales, .5, Precision)
-	sumProduct = round(sumProduct, .5, Precision)
+
+	sumSales = sumSales
+	sumProduct = sumProduct
 	if sumSales > sumProduct {
 		var zeroedTaxes []float64
 		for i := 0; i < len(taxes[0]); i++ {
 			zeroedTaxes = append(zeroedTaxes, 0)
 		}
 		taxes = append(taxes, zeroedTaxes)
-		inputProducts = append(inputProducts, round(sumSales-sumProduct, .5, Precision))
+		products = append(products, newNum(sumSales-sumProduct))
 	} else if sumSales < sumProduct {
 		for i, v := range taxes {
 			taxes[i] = append(v, 0)
 		}
-		inputSales = append(inputSales, round(sumProduct-sumSales, .5, Precision))
+		sales = append(sales, newNum(sumProduct-sumSales))
 	}
-	var products = make([]number, len(inputProducts))
-	var sales = make([]number, len(inputSales))
-	for i := range products {
-		products[i] = newNum(inputProducts[i])
-	}
-	for i := range sales {
-		sales[i] = newNum(inputSales[i])
+	taxesInt64 := make([][]int64, len(taxes))
+	for i, subarr := range taxes {
+		taxesInt64[i] = make([]int64, len(taxes[0]))
+		for j, value := range subarr {
+			taxesInt64[i][j] = int64(round(value, roundOn, precision)*tensPrecision)
+		}
 	}
 
-	return &Condition{products, sales, taxes, 0}, nil
+	return &Condition{products, sales, taxesInt64, 0}, nil
 }
 
 func newResult(n, m int) Result {
