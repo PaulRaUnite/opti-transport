@@ -6,10 +6,11 @@ import (
 
 //Condition contains starting information about transportation system
 type Condition struct {
-	products    []number
-	sales       []number
-	taxes       [][]int64
-	nextEpsilon int
+	products     []number
+	sales        []number
+	taxes        [][]int64
+	nextEpsilon  int
+	tensOfDigits float64 //10^precision
 }
 
 func (c Condition) String() string {
@@ -69,14 +70,14 @@ func (s Solving) WellPrintedString() string {
 	out += line + "-products-|\n"
 	for i, subarr := range s.Res.weight {
 		for _, value := range subarr {
-			out += fmt.Sprintf("|%10.3f", float64(value.n)/tensPrecision)
+			out += fmt.Sprintf("|%10.3f", float64(value.n)/s.cond.tensOfDigits)
 		}
-		out += fmt.Sprintf("|%10.3f", float64(s.cond.products[i].n)/tensPrecision)
+		out += fmt.Sprintf("|%10.3f", float64(s.cond.products[i].n)/s.cond.tensOfDigits)
 		out += "|\n"
 		out += line + "----------|\n"
 	}
 	for _, value := range s.cond.sales {
-		out += fmt.Sprintf("|%10.3f", float64(value.n)/tensPrecision)
+		out += fmt.Sprintf("|%10.3f", float64(value.n)/s.cond.tensOfDigits)
 	}
 	out += "|<- sales\n"
 	out += line + "\n"

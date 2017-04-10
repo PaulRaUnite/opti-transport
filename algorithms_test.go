@@ -1,7 +1,6 @@
 package opti_transport
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 )
@@ -34,6 +33,7 @@ func TestCondition_MinimalTaxesMethod(t *testing.T) {
 			{3, 4},
 		},
 		0,
+		1,
 	}
 	solution, err := cond.MinimalTaxesMethod()
 	if err != nil {
@@ -62,6 +62,7 @@ var s = Solving{
 			{4, 3, 2, 6},
 		},
 		0,
+		1,
 	},
 	Result{[][]number{
 		{newNum(20), newNum(10), newNum(0), newNum(0)},
@@ -133,8 +134,8 @@ func TestSolving_Optimize(t *testing.T) {
 	if s.Optimize() != nil {
 		t.Fail()
 	}
-	if s.CostFunc() != 180 {
-		t.Error(s.CostFunc(), s)
+	if s.CostFunc() != 170 {
+		t.Error(s.CostFunc(), "\n", s.WellPrintedString())
 	}
 }
 
@@ -147,6 +148,7 @@ func TestComplitely(t *testing.T) {
 			{1, 2, 2},
 		},
 		0,
+		1,
 	}
 	presolving1, err := c1.MinimalTaxesMethod()
 	if err != nil {
@@ -166,6 +168,7 @@ func TestComplitely(t *testing.T) {
 			{12, 5, 11, 10},
 		},
 		0,
+		1,
 	}
 	presolving2, err := c2.MinimalTaxesMethod()
 	if err != nil {
@@ -175,5 +178,27 @@ func TestComplitely(t *testing.T) {
 	if presolving2.CostFunc() != 1590 {
 		t.Fail()
 	}
-	fmt.Println(presolving2.Res)
+}
+
+func BenchmarkComplitely(b *testing.B) {
+	c1 := Condition{
+		[]number{newNum(3), newNum(6)},
+		[]number{newNum(3), newNum(2), newNum(4)},
+		[][]int64{
+			{4, 3, 3},
+			{1, 2, 2},
+		},
+		0,
+		1,
+	}
+	for i := 0; i < b.N; i++ {
+		presolving1, err := c1.MinimalTaxesMethod()
+		if err != nil {
+			b.Error(err)
+		}
+		presolving1.Optimize()
+		if presolving1.CostFunc() != 18.0 {
+			b.Fail()
+		}
+	}
 }

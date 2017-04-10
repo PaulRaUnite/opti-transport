@@ -2,6 +2,7 @@ package opti_transport
 
 import (
 	"errors"
+	"math"
 )
 
 var (
@@ -12,7 +13,7 @@ var (
 )
 
 //NewCondition is checking constructor of Condition
-func NewCondition(inputProducts, inputSales []float64, taxes [][]float64) (*Condition, error) {
+func NewCondition(inputProducts, inputSales []float64, taxes [][]float64, precision int) (*Condition, error) {
 	//checks for valid matrix and products and sales slices
 	if len(taxes) == 0 {
 		return nil, errEmptyTaxes
@@ -28,14 +29,15 @@ func NewCondition(inputProducts, inputSales []float64, taxes [][]float64) (*Cond
 			}
 		}
 	}
+	tensPrecision := math.Pow(10, float64(precision))
 	//copying
 	var products = make([]number, len(inputProducts))
 	var sales = make([]number, len(inputSales))
 	for i := range products {
-		products[i] = newNum(int64(round(inputProducts[i], roundOn, precision)*tensPrecision))
+		products[i] = newNum(int64(inputProducts[i] * tensPrecision))
 	}
 	for i := range sales {
-		sales[i] = newNum(int64(round(inputSales[i], roundOn, precision)*tensPrecision))
+		sales[i] = newNum(int64(inputSales[i] * tensPrecision))
 	}
 	//check closeness of system
 	var sumSales, sumProduct int64
@@ -65,11 +67,11 @@ func NewCondition(inputProducts, inputSales []float64, taxes [][]float64) (*Cond
 	for i, subarr := range taxes {
 		taxesInt64[i] = make([]int64, len(taxes[0]))
 		for j, value := range subarr {
-			taxesInt64[i][j] = int64(round(value, roundOn, precision)*tensPrecision)
+			taxesInt64[i][j] = int64(value * tensPrecision)
 		}
 	}
 
-	return &Condition{products, sales, taxesInt64, 0}, nil
+	return &Condition{products, sales, taxesInt64, 0, tensPrecision}, nil
 }
 
 func newResult(n, m int) Result {

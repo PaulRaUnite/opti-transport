@@ -26,21 +26,38 @@ var errNoNilCells = errors.New("no one nil cell")
 
 // addDisturbance returns error if nil cell doesn't exist
 func (s *Solving) addDisturbance() error {
+	//try to get nil cell with min tax
+	find := false
+	min_i := 0
+	min_j := 0
 	//force all cells
 	for i, subarr := range s.Res.weight {
 		for j, value := range subarr {
 			if value.isNil() {
-				//add `epsilon` to cell
-				epsilon := s.cond.nextEpsilon
-				s.cond.products[i].e[epsilon] = 1
-				s.cond.sales[i].e[epsilon] = 1
-				s.Res.weight[i][j].e[epsilon] = 1
-				s.cond.nextEpsilon++
-				return nil
+				if find {
+					if s.cond.taxes[min_i][min_j] > s.cond.taxes[i][j] {
+						min_i = i
+						min_j = j
+					}
+				} else {
+					min_i = i
+					min_j = j
+					find = true
+				}
 			}
 		}
 	}
-	return errNoNilCells
+	if find == false {
+		return errNoNilCells
+	}
+
+	//add `epsilon` to cell
+	epsilon := s.cond.nextEpsilon
+	s.cond.products[min_i].e[epsilon] = 1
+	s.cond.sales[min_i].e[epsilon] = 1
+	s.Res.weight[min_i][min_j].e[epsilon] = 1
+	s.cond.nextEpsilon++
+	return nil
 }
 
 // coloumnProcessPotential and rowProcessPotential are functions to call recursion from each other
@@ -137,7 +154,7 @@ func (s Solving) cycleWithNegativePotentialSum() (cycle, error) {
 						minDelta = delta
 					}
 				} else {
-					max = cell{i,j}
+					max = cell{i, j}
 					minDelta = delta
 					find = true
 				}
@@ -252,5 +269,5 @@ func (s Solving) CostFunc() float64 {
 			sum += value.n * s.cond.taxes[i][j]
 		}
 	}
-	return float64(sum) / (tensPrecision*tensPrecision)
+	return float64(sum) / (s.cond.tensOfDigits * s.cond.tensOfDigits)
 }

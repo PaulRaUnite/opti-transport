@@ -1,6 +1,5 @@
 package opti_transport
 
-
 type cell struct {
 	i, j int
 }
@@ -26,13 +25,6 @@ func (c cycle) minValue() number {
 //redistribution do redistribution over weight matrix by cycle shift(all even elements -- plus min value
 //, all odd -- minus min value
 func (c cycle) redistribution() {
-	/*min := c.line[1]
-	for i := 3; i < len(c.line); i+=2 {
-		tempCell := c.line[i]
-		if bigger(c.base.weight[min.i][min.j], c.base.weight[tempCell.i][tempCell.j]) {
-			min = tempCell
-		}
-	}*/
 	minValue := c.minValue()
 	for i, tempCell := range c.line {
 		temp := c.base.weight[tempCell.i][tempCell.j]
