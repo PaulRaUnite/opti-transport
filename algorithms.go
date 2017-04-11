@@ -2,6 +2,7 @@ package opti_transport
 
 import (
 	"errors"
+	"math"
 )
 
 // isDegenerate checks result matrix to contain n + m - 1 not nil cells
@@ -263,11 +264,12 @@ func (presolve *Solving) Optimize() error {
 
 //CostFunc returns sum of compositions of all pairs of weight and tax matrices
 func (s Solving) CostFunc() float64 {
+	tensPrecision := math.Pow(10, float64(s.cond.digits))
 	sum := int64(0)
 	for i, subarray := range s.Res.weight {
 		for j, value := range subarray {
 			sum += value.n * s.cond.taxes[i][j]
 		}
 	}
-	return float64(sum) / (s.cond.tensOfDigits * s.cond.tensOfDigits)
+	return float64(sum) / (tensPrecision * tensPrecision)
 }

@@ -2,15 +2,17 @@ package opti_transport
 
 import (
 	"fmt"
+	"math"
+	"strconv"
 )
 
 //Condition contains starting information about transportation system
 type Condition struct {
-	products     []number
-	sales        []number
-	taxes        [][]int64
-	nextEpsilon  int
-	tensOfDigits float64 //10^precision
+	products    []number
+	sales       []number
+	taxes       [][]int64
+	nextEpsilon int
+	digits      int //precision
 }
 
 func (c Condition) String() string {
@@ -61,6 +63,8 @@ type Solving struct {
 }
 
 func (s Solving) WellPrintedString() string {
+	tensOfDigits := math.Pow(10, float64(s.cond.digits))
+	format := "|%10." + strconv.Itoa(s.cond.digits) + "f"
 	var out string
 	line := "|"
 	for i := 0; i < len(s.Res.weight[0])*11-1; i++ {
@@ -70,14 +74,14 @@ func (s Solving) WellPrintedString() string {
 	out += line + "-products-|\n"
 	for i, subarr := range s.Res.weight {
 		for _, value := range subarr {
-			out += fmt.Sprintf("|%10.3f", float64(value.n)/s.cond.tensOfDigits)
+			out += fmt.Sprintf(format, float64(value.n)/tensOfDigits)
 		}
-		out += fmt.Sprintf("|%10.3f", float64(s.cond.products[i].n)/s.cond.tensOfDigits)
+		out += fmt.Sprintf(format, float64(s.cond.products[i].n)/tensOfDigits)
 		out += "|\n"
 		out += line + "----------|\n"
 	}
 	for _, value := range s.cond.sales {
-		out += fmt.Sprintf("|%10.3f", float64(value.n)/s.cond.tensOfDigits)
+		out += fmt.Sprintf(format, float64(value.n)/tensOfDigits)
 	}
 	out += "|<- sales\n"
 	out += line + "\n"

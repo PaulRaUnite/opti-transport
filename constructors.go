@@ -6,14 +6,19 @@ import (
 )
 
 var (
-	errWrongProduct = errors.New("wrong quantity of product points")
-	errWrongSales   = errors.New("wrong quantity of sales points")
-	errWrongTaxes   = errors.New("wrong tax rows length")
-	errEmptyTaxes   = errors.New("tax matrix is empty")
+	errWrongProduct     = errors.New("wrong quantity of product points")
+	errWrongSales       = errors.New("wrong quantity of sales points")
+	errWrongTaxes       = errors.New("wrong tax rows length")
+	errEmptyTaxes       = errors.New("tax matrix is empty")
+	errInvalidPrecision = errors.New("invalid precision(<= 0)")
 )
 
 //NewCondition is checking constructor of Condition
 func NewCondition(inputProducts, inputSales []float64, taxes [][]float64, precision int) (*Condition, error) {
+	//
+	if precision < 0 {
+		return nil, errInvalidPrecision
+	}
 	//checks for valid matrix and products and sales slices
 	if len(taxes) == 0 {
 		return nil, errEmptyTaxes
@@ -71,7 +76,7 @@ func NewCondition(inputProducts, inputSales []float64, taxes [][]float64, precis
 		}
 	}
 
-	return &Condition{products, sales, taxesInt64, 0, tensPrecision}, nil
+	return &Condition{products, sales, taxesInt64, 0, precision}, nil
 }
 
 func newResult(n, m int) Result {

@@ -148,7 +148,7 @@ func TestComplitely(t *testing.T) {
 			{1, 2, 2},
 		},
 		0,
-		1,
+		0,
 	}
 	presolving1, err := c1.MinimalTaxesMethod()
 	if err != nil {
@@ -156,6 +156,7 @@ func TestComplitely(t *testing.T) {
 	}
 	presolving1.Optimize()
 	if presolving1.CostFunc() != 18.0 {
+		t.Log(presolving1.CostFunc())
 		t.Fail()
 	}
 
@@ -168,7 +169,7 @@ func TestComplitely(t *testing.T) {
 			{12, 5, 11, 10},
 		},
 		0,
-		1,
+		0,
 	}
 	presolving2, err := c2.MinimalTaxesMethod()
 	if err != nil {
@@ -176,6 +177,7 @@ func TestComplitely(t *testing.T) {
 	}
 	presolving2.Optimize()
 	if presolving2.CostFunc() != 1590 {
+		t.Log(presolving1.CostFunc())
 		t.Fail()
 	}
 }
@@ -189,7 +191,7 @@ func BenchmarkComplitely(b *testing.B) {
 			{1, 2, 2},
 		},
 		0,
-		1,
+		0,
 	}
 	for i := 0; i < b.N; i++ {
 		presolving1, err := c1.MinimalTaxesMethod()
@@ -198,6 +200,7 @@ func BenchmarkComplitely(b *testing.B) {
 		}
 		presolving1.Optimize()
 		if presolving1.CostFunc() != 18.0 {
+			b.Log(presolving1.CostFunc())
 			b.Fail()
 		}
 	}
