@@ -14,3 +14,4 @@ because it can do worse or/and get data race).
 - methods of the package require to save data in `Condition`
  struct after getting `Solving` struct.
 - you can change the precision of floats in `NewCondition`
+- now you can't get result matrix

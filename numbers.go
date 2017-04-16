@@ -64,7 +64,6 @@ func plus(n1, n2 number) number {
 	n1.n = n1.n + n2.n
 
 	//merge sets
-	n1.e = n1.e
 	for key, value := range n2.e {
 		if _, ok := n1.e[key]; ok {
 			n1.e[key] += value

@@ -62,12 +62,33 @@ type Solving struct {
 	Res  Result
 }
 
+var Export string
+
 func (s Solving) WellPrintedString() string {
 	tensOfDigits := math.Pow(10, float64(s.cond.digits))
-	format := "|%10." + strconv.Itoa(s.cond.digits) + "f"
+	d := s.cond.digits
+	max := int64(float64(s.Res.weight[0][0].n) / tensOfDigits)
+	for _, subarr := range s.Res.weight {
+		for _, value := range subarr {
+			t := int64(float64(value.n) / tensOfDigits)
+			if max < t {
+				max = t
+			}
+		}
+	}
+	Export = fmt.Sprintf("max: %d ", max)
+	tens := 0
+	for max > 0 {
+		max = max / 10
+		tens++
+	}
+	Export += fmt.Sprintf("dig: %d", tens)
+
+	format := "|%" + strconv.Itoa(d+1+tens) + "." + strconv.Itoa(d) + "f"
+	prodFormat := "|%10." + strconv.Itoa(d) + "f"
 	var out string
 	line := "|"
-	for i := 0; i < len(s.Res.weight[0])*11-1; i++ {
+	for i := 0; i < len(s.Res.weight[0])*(d+2+tens)-1; i++ {
 		line += "-"
 	}
 	line += "|"
@@ -76,7 +97,7 @@ func (s Solving) WellPrintedString() string {
 		for _, value := range subarr {
 			out += fmt.Sprintf(format, float64(value.n)/tensOfDigits)
 		}
-		out += fmt.Sprintf(format, float64(s.cond.products[i].n)/tensOfDigits)
+		out += fmt.Sprintf(prodFormat, float64(s.cond.products[i].n)/tensOfDigits)
 		out += "|\n"
 		out += line + "----------|\n"
 	}

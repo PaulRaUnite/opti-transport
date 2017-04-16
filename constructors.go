@@ -53,8 +53,6 @@ func NewCondition(inputProducts, inputSales []float64, taxes [][]float64, precis
 		sumSales += v.n
 	}
 
-	sumSales = sumSales
-	sumProduct = sumProduct
 	if sumSales > sumProduct {
 		var zeroedTaxes []float64
 		for i := 0; i < len(taxes[0]); i++ {

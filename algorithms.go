@@ -26,6 +26,9 @@ func (r Result) isDegenerate() bool {
 var errNoNilCells = errors.New("no one nil cell")
 
 // addDisturbance returns error if nil cell doesn't exist
+// it uses element with minimal tax to add epsilon
+// it increases speed of optimizing, because after redistribution of taxes by cycle
+// the cell will contain normal weight
 func (s *Solving) addDisturbance() error {
 	//try to get nil cell with min tax
 	find := false
