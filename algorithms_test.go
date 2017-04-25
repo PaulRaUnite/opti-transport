@@ -52,26 +52,26 @@ func TestCondition_MinimalTaxesMethod(t *testing.T) {
 	}
 }
 
-var s = Solving{
-	Condition{
-		[]number{newNum(30), newNum(40), newNum(20)},
-		[]number{newNum(20), newNum(30), newNum(30), newNum(10)},
-		[][]int64{
-			{2, 3, 2, 4},
-			{3, 2, 5, 1},
-			{4, 3, 2, 6},
-		},
-		0,
-		1,
-	},
-	Result{[][]number{
-		{newNum(20), newNum(10), newNum(0), newNum(0)},
-		{newNum(0), newNum(20), newNum(20), newNum(0)},
-		{newNum(0), newNum(0), newNum(10), newNum(10)},
-	}},
-}
 
 func TestSolving_potential(t *testing.T) {
+	var s = Solving{
+		Condition{
+			[]number{newNum(30), newNum(40), newNum(20)},
+			[]number{newNum(20), newNum(30), newNum(30), newNum(10)},
+			[][]int64{
+				{2, 3, 2, 4},
+				{3, 2, 5, 1},
+				{4, 3, 2, 6},
+			},
+			0,
+			0,
+		},
+		Result{[][]number{
+			{newNum(20), newNum(10), newNum(0), newNum(0)},
+			{newNum(0), newNum(20), newNum(20), newNum(0)},
+			{newNum(0), newNum(0), newNum(10), newNum(10)},
+		}},
+	}
 	should_v := []number{newNum(0), newNum(-1), newNum(-4)}
 	should_g := []number{newNum(2), newNum(3), newNum(6), newNum(10)}
 	vr, gr := s.potentials()
@@ -88,6 +88,24 @@ func TestSolving_potential(t *testing.T) {
 }
 
 func TestSolving_cycleWithNegativePotentialSum(t *testing.T) {
+	var s = Solving{
+		Condition{
+			[]number{newNum(30), newNum(40), newNum(20)},
+			[]number{newNum(20), newNum(30), newNum(30), newNum(10)},
+			[][]int64{
+				{2, 3, 2, 4},
+				{3, 2, 5, 1},
+				{4, 3, 2, 6},
+			},
+			0,
+			0,
+		},
+		Result{[][]number{
+			{newNum(20), newNum(10), newNum(0), newNum(0)},
+			{newNum(0), newNum(20), newNum(20), newNum(0)},
+			{newNum(0), newNum(0), newNum(10), newNum(10)},
+		}},
+	}
 	c, err := s.cycleWithNegativePotentialSum()
 	if err != nil {
 		t.Fail()
@@ -99,6 +117,24 @@ func TestSolving_cycleWithNegativePotentialSum(t *testing.T) {
 }
 
 func TestSolving_createCycle(t *testing.T) {
+	var s = Solving{
+		Condition{
+			[]number{newNum(30), newNum(40), newNum(20)},
+			[]number{newNum(20), newNum(30), newNum(30), newNum(10)},
+			[][]int64{
+				{2, 3, 2, 4},
+				{3, 2, 5, 1},
+				{4, 3, 2, 6},
+			},
+			0,
+			0,
+		},
+		Result{[][]number{
+			{newNum(20), newNum(10), newNum(0), newNum(0)},
+			{newNum(0), newNum(20), newNum(20), newNum(0)},
+			{newNum(0), newNum(0), newNum(10), newNum(10)},
+		}},
+	}
 	c, err := s.createCycle(0, 2)
 	if err != nil {
 		t.Fail()
@@ -110,6 +146,24 @@ func TestSolving_createCycle(t *testing.T) {
 }
 
 func TestCycle_redistribution(t *testing.T) {
+	var s = Solving{
+		Condition{
+			[]number{newNum(30), newNum(40), newNum(20)},
+			[]number{newNum(20), newNum(30), newNum(30), newNum(10)},
+			[][]int64{
+				{2, 3, 2, 4},
+				{3, 2, 5, 1},
+				{4, 3, 2, 6},
+			},
+			0,
+			0,
+		},
+		Result{[][]number{
+			{newNum(20), newNum(10), newNum(0), newNum(0)},
+			{newNum(0), newNum(20), newNum(20), newNum(0)},
+			{newNum(0), newNum(0), newNum(10), newNum(10)},
+		}},
+	}
 	c, err := s.createCycle(0, 2)
 	if err != nil {
 		t.Fail()
@@ -131,11 +185,29 @@ func TestCycle_redistribution(t *testing.T) {
 }
 
 func TestSolving_Optimize(t *testing.T) {
-	if s.Optimize() != nil {
-		t.Fail()
+	var s = Solving{
+		Condition{
+			[]number{newNum(30), newNum(40), newNum(20)},
+			[]number{newNum(20), newNum(30), newNum(30), newNum(10)},
+			[][]int64{
+				{2, 3, 2, 4},
+				{3, 2, 5, 1},
+				{4, 3, 2, 6},
+			},
+			0,
+			0,
+		},
+		Result{[][]number{
+			{newNum(20), newNum(10), newNum(0), newNum(0)},
+			{newNum(0), newNum(20), newNum(20), newNum(0)},
+			{newNum(0), newNum(0), newNum(10), newNum(10)},
+		}},
+	}
+	if err := s.Optimize(); err != nil {
+		t.Error(err)
 	}
 	if s.CostFunc() != 170 {
-		t.Error(s.CostFunc(), "\n", s.WellPrintedString())
+		t.Error(s.CostFunc(), "\n", s.WellPrintedString(), "\n", s.WString())
 	}
 }
 

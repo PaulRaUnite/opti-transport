@@ -64,6 +64,14 @@ type Solving struct {
 
 var Export string
 
+func (s Solving) WString() string {
+	var out string
+	out += fmt.Sprintln("prodt: ", s.cond.products)
+	out += fmt.Sprintln("sales: ", s.cond.sales)
+	out += s.Res.String()
+	return out
+
+}
 func (s Solving) WellPrintedString() string {
 	tensOfDigits := math.Pow(10, float64(s.cond.digits))
 	d := s.cond.digits
@@ -76,6 +84,12 @@ func (s Solving) WellPrintedString() string {
 			}
 		}
 	}
+	for _, value := range s.cond.sales {
+		t := int64(float64(value.n) / tensOfDigits)
+		if max < t {
+				max = t
+		}
+	}
 	Export = fmt.Sprintf("max: %d ", max)
 	tens := 0
 	for max > 0 {
@@ -83,28 +97,59 @@ func (s Solving) WellPrintedString() string {
 		tens++
 	}
 	Export += fmt.Sprintf("dig: %d", tens)
-
-	format := "|%" + strconv.Itoa(d+1+tens) + "." + strconv.Itoa(d) + "f"
-	prodFormat := "|%10." + strconv.Itoa(d) + "f"
 	var out string
-	line := "|"
-	for i := 0; i < len(s.Res.weight[0])*(d+2+tens)-1; i++ {
-		line += "-"
-	}
-	line += "|"
-	out += line + "-products-|\n"
-	for i, subarr := range s.Res.weight {
-		for _, value := range subarr {
+	if d > 0 {
+		format := "|%" + strconv.Itoa(d+1+tens) + "." + strconv.Itoa(d) + "f"
+		prodFormat := "|%10." + strconv.Itoa(d) + "f"
+		line := "+"
+		for i := 0; i < len(s.Res.weight[0])*(d+2+tens)-1; i++ {
+			if (i + 1) % (d+2+tens) == 0 {
+				line += "+"
+			} else {
+				line += "-"
+			}
+		}
+		line += "+"
+		out += line + "-products-+\n"
+		for i, subarr := range s.Res.weight {
+			for _, value := range subarr {
+				out += fmt.Sprintf(format, float64(value.n)/tensOfDigits)
+			}
+			out += fmt.Sprintf(prodFormat, float64(s.cond.products[i].n)/tensOfDigits)
+			out += "|\n"
+			out += line + "----------+\n"
+		}
+		for _, value := range s.cond.sales {
 			out += fmt.Sprintf(format, float64(value.n)/tensOfDigits)
 		}
-		out += fmt.Sprintf(prodFormat, float64(s.cond.products[i].n)/tensOfDigits)
-		out += "|\n"
-		out += line + "----------|\n"
+		out += "|<- sales\n"
+		out += line + "\n"
+	} else {
+		format := "|%" + strconv.Itoa(d+1+tens) + "d"
+		prodFormat := "|%10d"
+		line := "+"
+		for i := 0; i < len(s.Res.weight[0])*(d+2+tens)-1; i++ {
+			if (i + 1) % (d+2+tens) == 0 {
+				line += "+"
+			} else {
+				line += "-"
+			}
+		}
+		line += "+"
+		out += line + "-products-+\n"
+		for i, subarr := range s.Res.weight {
+			for _, value := range subarr {
+				out += fmt.Sprintf(format, value.n)
+			}
+			out += fmt.Sprintf(prodFormat, s.cond.products[i].n)
+			out += "|\n"
+			out += line + "----------+\n"
+		}
+		for _, value := range s.cond.sales {
+			out += fmt.Sprintf(format, value.n)
+		}
+		out += "|<- sales\n"
+		out += line + "\n"
 	}
-	for _, value := range s.cond.sales {
-		out += fmt.Sprintf(format, float64(value.n)/tensOfDigits)
-	}
-	out += "|<- sales\n"
-	out += line + "\n"
 	return out
 }

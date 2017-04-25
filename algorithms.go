@@ -23,45 +23,30 @@ func (r Result) isDegenerate() bool {
 	return false
 }
 
-var errNoNilCells = errors.New("no one nil cell")
+var (
+	errNoAcyclicCells = errors.New("no one acyclic cell")
+)
 
-// addDisturbance returns error if nil cell doesn't exist
-// it uses element with minimal tax to add epsilon
-// it increases speed of optimizing, because after redistribution of taxes by cycle
-// the cell will contain normal weight
+// addDisturbance returns error if nil acyclic cell doesn't exist
+// it adds epsilon to cell weight
 func (s *Solving) addDisturbance() error {
-	//try to get nil cell with min tax
-	find := false
-	min_i := 0
-	min_j := 0
 	//force all cells
 	for i, subarr := range s.Res.weight {
 		for j, value := range subarr {
 			if value.isNil() {
-				if find {
-					if s.cond.taxes[min_i][min_j] > s.cond.taxes[i][j] {
-						min_i = i
-						min_j = j
-					}
-				} else {
-					min_i = i
-					min_j = j
-					find = true
+				_, err := s.createCycle(i, j)
+				if err != nil {
+					epsilon := s.cond.nextEpsilon
+					s.cond.products[i].e[epsilon] = 1
+					s.cond.sales[j].e[epsilon] = 1
+					s.Res.weight[i][j].e[epsilon] = 1
+					s.cond.nextEpsilon++
+					return nil
 				}
 			}
 		}
 	}
-	if find == false {
-		return errNoNilCells
-	}
-
-	//add `epsilon` to cell
-	epsilon := s.cond.nextEpsilon
-	s.cond.products[min_i].e[epsilon] = 1
-	s.cond.sales[min_i].e[epsilon] = 1
-	s.Res.weight[min_i][min_j].e[epsilon] = 1
-	s.cond.nextEpsilon++
-	return nil
+	return errNoAcyclicCells
 }
 
 // coloumnProcessPotential and rowProcessPotential are functions to call recursion from each other
@@ -152,7 +137,7 @@ func (s Solving) cycleWithNegativePotentialSum() (cycle, error) {
 			//Cij <= Ui + Vj
 			//Dij = Cij - Ui - Vj
 			delta := minus(minus(numValue, prodPotent[i]), salePotent[j])
-			if bigger(zero, delta) {
+			if bigger(zero, delta) { // 0 > delta
 				if find {
 					if bigger(minDelta, delta) {
 						minDelta = delta
