@@ -13,9 +13,7 @@ var (
 	errInvalidPrecision = errors.New("invalid precision(<= 0)")
 )
 
-//NewCondition is checking constructor of Condition
 func NewCondition(inputProducts, inputSales []float64, taxes [][]float64, precision int) (*Condition, error) {
-	//
 	if precision < 0 {
 		return nil, errInvalidPrecision
 	}

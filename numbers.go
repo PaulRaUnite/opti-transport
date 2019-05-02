@@ -5,13 +5,12 @@ import (
 )
 
 //float point number and map of `e`(`epsilon` - infinity small number)
-//ATTENTION: never use number{n, nil}, only newNum, because functions not check nil map
+//ATTENTION: never use number{n, nil}, only newNum, because functions doesn't check nil map
 type number struct {
 	n int64
 	e map[int]int8 //named `epsilon` map to sign(1, -1)
 }
 
-//newNum is constructor of number
 func newNum(n int64) number {
 	return number{n, make(map[int]int8)}
 }
@@ -24,7 +23,6 @@ func (n number) isNil() bool {
 	return len(n.e) == 0 && n.n == 0
 }
 
-//equal compares n1 and n2 to be equal(n1 == n2)
 func equal(n1, n2 number) bool {
 	if n1.n != n2.n {
 		return false
@@ -40,7 +38,6 @@ func equal(n1, n2 number) bool {
 	return true
 }
 
-//bigger returns true if n1 is bigger than n2(n1 > n2)
 func bigger(n1, n2 number) bool {
 	diff := minus(n1, n2)
 	if diff.n > 0 {
@@ -58,7 +55,6 @@ func bigger(n1, n2 number) bool {
 	return false
 }
 
-//plus is n1 + n2
 func plus(n1, n2 number) number {
 	//add numbers
 	n1.n = n1.n + n2.n
@@ -79,10 +75,8 @@ func plus(n1, n2 number) number {
 	return n1
 }
 
-//minus is n1 - n2
 func minus(n1, n2 number) number {
 	var temp = newNum(0)
-	//add numbers
 	temp.n = n1.n - n2.n
 
 	//merge sets
@@ -102,7 +96,6 @@ func minus(n1, n2 number) number {
 	return temp
 }
 
-//min returns minimum of n1 and n2
 func min(n1, n2 number) number {
 	if bigger(n1, n2) {
 		return n2

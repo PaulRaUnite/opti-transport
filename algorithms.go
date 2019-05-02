@@ -222,16 +222,16 @@ func (c Condition) MinimalTaxesMethod() (Solving, error) {
 	return Solving{c, res}, nil
 }
 
+//Idea: infinite loop until all Delta`s(Dij = Cij - Ui - Vj, where Cij - tax, Ui - product potential,
+//Vj - sale potential) will be positive
+//loop:
+//  if weight matrix contains less than m + n - 1(where m x n is shape of matrix) not nil cells:
+//      add `epsilon`(infinite small number) to first nil cell
+//  than, get some cycle, based on nil cell with negative delta
+//  and do redistribution of weights thought the cycle
+//  it will "repair" negativity of cell and improve optimality of the matrix
+//  do loop.
 func (presolve *Solving) Optimize() error {
-	//Idea: infinite loop until all Delta`s(Dij = Cij - Ui - Vj, where Cij - tax, Ui - product potential,
-	//Vj - sale potential) will be positive
-	//loop:
-	//  if weight matrix contains less than m + n - 1(where m x n is shape of matrix) not nil cells:
-	//      add `epsilon`(infinite small number) to first nil cell
-	//  than, get some cycle, based on nil cell with negative delta
-	//  and do redistribution of weights thought the cycle
-	//  it will "repair" negativity of cell and improve optimality of the matrix
-	//  do loop.
 	for {
 		if presolve.Res.isDegenerate() {
 			if err := presolve.addDisturbance(); err != nil {
